@@ -1,0 +1,142 @@
+ <!-- YouLoader - A simple Flask app to download YouTube videos in specified quality
+ This HTML file is the front-end for the YouLoader application, allowing users to input a YouTube or Instagram link and select the video quality for download. -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Infinity Downloader</title>
+    <!-- Bootstrap CSS for styling -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script>
+        // Fetch available video qualities from the server when a URL is entered
+        async function fetchQualities() {
+            const url = document.getElementById('url').value;
+            if (!url) return;
+            // Send POST request to /get_qualities endpoint with the video URL
+            const res = await fetch('/get_qualities', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ url })
+            });
+
+            // Populate the quality dropdown with the received options
+            const data = await res.json();
+            const select = document.getElementById('quality');
+            select.innerHTML = '';
+
+            for (const [label, value] of Object.entries(data)) {
+                const opt = document.createElement('option');
+                opt.value = value;
+                opt.textContent = label;
+                select.appendChild(opt);
+            }
+
+            // Add audio option
+            const audio = document.createElement('option');
+            audio.value = 'bestaudio';
+            audio.textContent = 'Audio Only';
+            select.appendChild(audio);
+        }
+    </script>
+</head>
+<body class="bg-dark text-white">
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Infinity Downloader</h1>
+        <!-- Main form for user input -->
+        <form method="POST">
+            <div class="mb-3">
+                <input type="text" name="url" id="url" class="form-control" placeholder="Paste YouTube/Instagram Link Here" required onblur="fetchQualities()">
+            </div>
+            <div class="mb-3">
+                <select class="form-select" name="quality" id="quality" required>
+                    <option value="" disabled selected>Select Quality...</option>
+                    <option>144</option>
+                    <option>240</option>
+                    <option>360</option>
+                    <option>480</option>
+                    <option>720</option>
+                    <option>1080</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Download</button>
+        </form>
+
+        
+        <!-- Progress bar (hidden by default, shown during download) -->
+        <div class="progress mt-4" style="height: 20px; display: none;" id="progressContainer">
+            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%; height: 100%;" id="progressBar">
+                Downloading...
+            </div>
+        </div>
+
+        {% if progress %}
+            <div class="progress mt-4">
+                <div class="progress-bar progress-bar-striped progress-bar-animated" style="width: {{ progress }}%">{{ progress }}%</div>
+            </div>
+        {% endif %}
+
+        
+        
+        {% if message %}
+            <div class="alert alert-info text-center mt-4" id="msg">{{ message }}</div>
+            <script>
+                // Hide the message after 10 seconds
+                setTimeout(() => {
+                    document.getElementById('msg').style.display = 'none';
+                }, 10000); // 10 seconds
+            </script>
+        {% endif %}
+
+    </div>
+
+    <script>
+        // Function Simulate a progress bar animation on form submit
+        function simulateProgress() {
+            const container = document.getElementById("progressContainer");
+            const bar = document.getElementById("progressBar");
+            container.style.display = "block";
+            
+            let width = 0;
+            const interval = setInterval(() => {
+                if (width >= 90) {
+                    clearInterval(interval);
+                } 
+                else {
+                    width += 0.5;
+                    bar.style.width = width + "%";
+                    bar.textContent = "Downloading...";
+                }
+            },100); // adjust speed
+        }
+        // Start progress simulation when the form is submitted (Function call)
+        document.querySelector("form").addEventListener("submit", function () {
+            simulateProgress();
+        });
+    </script>
+
+
+    <!-- Welcome message/info and Disclaimer section  -->
+    <div class="container my-4">
+        <div class=" rounded p-3 mx-auto" style="max-width: 1500px; background: rgba(255,255,255,0.05);">
+            <p class="mb-0 text-center">
+                <i>
+                    <b>Welcome</b> to the Only Tool where you can <b>Download Videos</b> from <b>YOUTUBE</b> and <b>INSTAGRAM</b> <b>(</b>Public Accounts Only<b>)</b> in <b>Highest Quality.</b> <b>No Limits</b>, No Need to Install any Software,  just <b>Paste the Link</b> and <b>Download</b> it directly and <b>Enjoy your Videos Offline!</b>
+                </i>
+            </p>
+        </div>
+    </div>
+
+    <div class="container my-4">
+        <div class="rounded p-3 mx-auto" style="max-width: 1500px; ">
+            <p class="mb-0 text-center">
+                <i>
+                    <b>Note:</b> This Tool is for <b>Educational Purposes</b> only. Please <b>Respect Copyright Laws</b> and <b>The Terms of Service of YouTube and Instagram.</b>
+                </i>
+            </p>
+        </div>
+    </div>
+
+     
+
+</body>
+</html>

@@ -1,0 +1,5 @@
+_pycache_/
+*.pyc
+*.mp4
+.env
+Infinity_Store/
