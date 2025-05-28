@@ -39,4 +39,6 @@ def index():
     return render_template('index.html', message=message)
 
 if __name__ == '__main__':
-    app.run(debug=True)     
+    # app.run(debug=True) 
+    port = int(os.environ.get('PORT', 5000))  # use port from render
+    app.run(host='0.0.0.0', port=port)  # Run the app on all available IP addresses
