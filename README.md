@@ -45,9 +45,6 @@
 
 ![Home Screenshot](screenshots/Screenshot1.png)
 
-### Video Quality Selection
-
-![Quality Selection](screenshots/Screenshot2.png)
 
 ### Download Progress
 
