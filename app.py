@@ -4,6 +4,7 @@ from flask import Flask, render_template, request   # Import Flask modules
 import yt_dlp                                       # Import yt_dlp for downloading videos
 import os
 from pathlib import Path
+
 # Set the download directory to "Downloads/Infinity_Store" in the user's home folder
 download_dir = str(Path.home()/"Downloads" / "Infinity_Store")
 os.makedirs(download_dir, exist_ok=True)    # Create the directory if it doesn't exist
@@ -17,15 +18,20 @@ def index():
         video_url = request.form.get('url')
         quality = request.form.get('quality')
 
-        if video_url and quality:   # Proceed only if both URL and quality are provided
+        if video_url and quality:  # Proceed only if both URL and quality are provided
             try:
                 # Set yt_dlp options for downloading the video in the selected quality
                 ydl_opts = {
-                    'format': f'bestvideo[height={quality}][ext=mp4]+bestaudio[ext=m4a]/best',
-                    'merge_output_format': 'mp4',   # Merge video and audio into mp4
-                    'outtmpl': os.path.join(download_dir, '%(title)s.%(ext)s'),
-                    'quiet': True
+                    'format': f'bestvideo[height={quality}][ext=mp4]+bestaudio[ext=m4a]/best',  # Format string for quality
+                    'merge_output_format': 'mp4',  # Merge video and audio into mp4
+                    'outtmpl': os.path.join(download_dir, '%(title)s.%(ext)s'),  # Output file template
+                    'quiet': True,  # Suppress yt_dlp output
+                    'no_set_filesize': True,           # Don't set file size from metadata
+                    'no_fixup': True,                  # Don't fixup files
+                    'nooverwrites': False,             # Allow overwriting files
+                    'updatetime': False                # Do NOT set file time to video upload time
                 }
+                # Download the video using yt_dlp
                 with yt_dlp.YoutubeDL(ydl_opts) as ydl:
                     ydl.download([video_url])
                 message = f'Video downloaded successfully'  # Success message
@@ -33,7 +39,7 @@ def index():
                 # If an error occurs, show an error message
                 message = 'Please provide a valid link and select quality.'
         # else:
-        #     message = ""
+        #     message = ""  # (Optional) Set message if fields are missing
 
     # Render the HTML template and pass the message variable
     return render_template('index.html', message=message)
