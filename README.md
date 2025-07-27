@@ -48,4 +48,4 @@
 
 ### Download Progress
 
-![Progress Bar](screenshots/Screenshot3.png)
+![Progress Bar](screenshots/Screenshot2.png)
